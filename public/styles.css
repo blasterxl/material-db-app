@@ -332,7 +332,7 @@ textarea:focus {
 }
 
 .bulk-bar input {
-  width: 170px;
+  width: 200px;
   padding: 6px 10px;
   border-radius: 999px;
 }
@@ -459,10 +459,14 @@ tbody tr.is-hidden {
 }
 
 .print-label-button {
-  display: inline-grid;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 31px;
   height: 29px;
-  place-items: center;
+  box-sizing: border-box; /* Гарантує, що border не збільшує розмір */
+  padding: 0;            /* Скидаємо системні відступи кнопок */
+  vertical-align: middle;/* Вирівнює кнопки між собою в одному рядку */
   border: 1px solid #c9bcaa;
   border-radius: 9px;
   color: #142027;
@@ -477,21 +481,22 @@ tbody tr.is-hidden {
 }
 
 .print-label-button svg {
-  width: 17px;
-  height: 17px;
-  fill: none;
+  display: block;
+  width: 16px;  /* Або інший потрібний розмір іконки */
+  height: 16px;
+  fill: none;   /* Якщо іконка використовує stroke */
   stroke: currentColor;
   stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 .print-label-button.pdf-button {
   width: 36px;
+  height: 29px; /* Переконуємося, що висота збігається */
   margin-left: 4px;
   font-size: 10px;
   font-weight: 900;
   letter-spacing: -0.03em;
+  line-height: 1; /* Усуває вплив міжрядкового інтервалу на висоту */
 }
 
 .checkbox-col input {

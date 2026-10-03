@@ -23,7 +23,7 @@
     "primaryKey": "interny_kod"
   },
   "generatedAt": "2026-09-10T08:32:15.397Z",
-  "updatedAt": "2026-10-03T11:57:07.598Z",
+  "updatedAt": "2026-10-03T13:13:10.636Z",
   "count": 1019,
   "materials": [
     {
@@ -13128,12 +13128,12 @@
         "oblubeny": false,
         "nedostupny": false,
         "vyradeny": false,
-        "archivovany": false,
+        "archivovany": true,
         "skryty": false,
         "skupiny": [],
         "tagy": [],
         "poznamka": "",
-        "updatedAt": ""
+        "updatedAt": "2026-10-03T13:13:10.636Z"
       },
       "qr_pdf": {
         "source": "price_tags_297317_20260910_094451.pdf",
