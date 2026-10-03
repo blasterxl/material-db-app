@@ -25,11 +25,29 @@ def pt(mm):
 
 
 def font_path(*names):
-    font_dir = os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts")
+    # Перелік можливих папок зі шрифтами на Windows та Linux
+    font_dirs = [
+        os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts"),
+        "/usr/share/fonts",
+        "/usr/share/fonts/truetype",
+        "/usr/share/fonts/truetype/dejavu",
+        "/usr/share/fonts/truetype/liberation",
+        "/usr/share/fonts/truetype/freefont",
+    ]
+    
     for name in names:
-        path = os.path.join(font_dir, name)
-        if os.path.exists(path):
-            return path
+        # Спочатку шукаємо прямо у поточній папці скрипта (якщо файл .ttf лежить поруч)
+        local_path = os.path.join(os.path.dirname(__file__), name)
+        if os.path.exists(local_path):
+            return local_path
+
+        # Потім шукаємо в системних директоріях
+        for fdir in font_dirs:
+            if not os.path.exists(fdir):
+                continue
+            for root, _, files in os.walk(fdir):
+                if name.lower() in [f.lower() for f in files]:
+                    return os.path.join(root, name)
     return None
 
 
@@ -41,11 +59,11 @@ def load_font(size, *names):
 
 
 FONTS = {
-    "impact": lambda size: load_font(size, "impact.ttf", "arialbd.ttf"),
-    "narrow": lambda size: load_font(size, "arialn.ttf", "arial.ttf"),
-    "narrow_bold": lambda size: load_font(size, "arialnb.ttf", "arialbd.ttf"),
-    "arial": lambda size: load_font(size, "arial.ttf"),
-    "arial_bold": lambda size: load_font(size, "arialbd.ttf", "arial.ttf"),
+    "impact": lambda size: load_font(size, "impact.ttf", "FreeSansBold.ttf", "DejaVuSans-Bold.ttf", "arialbd.ttf"),
+    "narrow": lambda size: load_font(size, "arialn.ttf", "FreeSans.ttf", "DejaVuSans.ttf", "arial.ttf"),
+    "narrow_bold": lambda size: load_font(size, "arialnb.ttf", "FreeSansBold.ttf", "DejaVuSans-Bold.ttf", "arialbd.ttf"),
+    "arial": lambda size: load_font(size, "arial.ttf", "FreeSans.ttf", "DejaVuSans.ttf"),
+    "arial_bold": lambda size: load_font(size, "arialbd.ttf", "FreeSansBold.ttf", "DejaVuSans-Bold.ttf"),
 }
 
 

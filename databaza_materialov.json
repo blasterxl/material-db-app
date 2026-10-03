@@ -23,7 +23,7 @@
     "primaryKey": "interny_kod"
   },
   "generatedAt": "2026-09-10T08:32:15.397Z",
-  "updatedAt": "2026-10-01T18:57:06.026Z",
+  "updatedAt": "2026-10-03T11:57:07.598Z",
   "count": 1019,
   "materials": [
     {
@@ -39,12 +39,10 @@
         "vyradeny": false,
         "archivovany": false,
         "skryty": false,
-        "skupiny": [
-          "lesk"
-        ],
+        "skupiny": [],
         "tagy": [],
         "poznamka": "",
-        "updatedAt": "2026-10-01T18:57:06.026Z"
+        "updatedAt": "2026-10-03T11:57:07.598Z"
       },
       "qr_pdf": {
         "source": "price_tags_297317_20260910_094451.pdf",
@@ -49084,12 +49082,10 @@
         "vyradeny": false,
         "archivovany": false,
         "skryty": false,
-        "skupiny": [
-          "bannery"
-        ],
+        "skupiny": [],
         "tagy": [],
         "poznamka": "",
-        "updatedAt": "2026-09-17T07:59:56.602Z"
+        "updatedAt": "2026-10-03T11:56:32.760Z"
       },
       "qr_pdf": {
         "source": "price_tags_297317_20260910_094451.pdf",
@@ -49146,12 +49142,10 @@
         "vyradeny": false,
         "archivovany": false,
         "skryty": false,
-        "skupiny": [
-          "bannery"
-        ],
+        "skupiny": [],
         "tagy": [],
         "poznamka": "",
-        "updatedAt": "2026-09-10T09:49:01.787Z"
+        "updatedAt": "2026-10-03T11:56:43.714Z"
       },
       "qr_pdf": {
         "source": "price_tags_297317_20260910_094451.pdf",
@@ -49179,12 +49173,10 @@
         "vyradeny": false,
         "archivovany": false,
         "skryty": false,
-        "skupiny": [
-          "bannery"
-        ],
+        "skupiny": [],
         "tagy": [],
         "poznamka": "",
-        "updatedAt": "2026-09-10T09:49:01.787Z"
+        "updatedAt": "2026-10-03T11:56:54.157Z"
       },
       "qr_pdf": {
         "source": "price_tags_297317_20260910_094451.pdf",
