@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Materiálová databáza</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="top-actions">
+        <button class="ghost-button" id="refreshButton" type="button" title="Znovu načíta databázu zo súboru JSON">Obnoviť</button>
+        <button class="accent-button" id="newMaterialButton" type="button" title="Vytvoriť nový materiál">+ Materiál</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="browser-panel">
+        <div class="database-view" id="databaseView">
+          <div class="table-controls">
+            <div class="toolbar">
+              <label class="search-box">
+                <span>Hľadať</span>
+                <input id="searchInput" type="search" placeholder="názov, interný kód, ID, skratka, EAN...">
+              </label>
+              <label class="select-box">
+                <span>Zobraziť</span>
+                <select id="visibilityFilter">
+                  <option value="active">Aktívne bez archívu</option>
+                  <option value="all">Všetko</option>
+                  <option value="archived">Len archivované</option>
+                  <option value="hidden">Len skryté</option>
+                </select>
+              </label>
+              <label class="select-box">
+                <span>Skupina</span>
+                <select id="groupFilter">
+                  <option value="">Všetky skupiny</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="bulk-bar">
+              <button type="button" id="clearSelectionButton" title="Odoberie označenie zo všetkých vybraných riadkov">Zrušiť výber</button>
+              <button type="button" data-bulk-action="oblubeny" data-bulk-value="true" title="Označí vybrané materiály ako obľúbené">Obľúbiť</button>
+              <button type="button" data-bulk-action="archivovany" data-bulk-value="true" title="Presunie vybrané materiály do archívu">Archivovať</button>
+              <button type="button" data-bulk-action="skryty" data-bulk-value="true" title="Skryje vybrané materiály zo základného zobrazenia">Skryť</button>
+              <button type="button" id="bulkPrintButton" title="Vytlačí čiernobiele HTML štítky pre označené materiály">Tlač štítkov</button>
+              <button type="button" id="bulkPdfButton" title="Stiahne farebné PDF štítky pre označené materiály">PDF štítky</button>
+              <div class="bulk-group-actions">
+                <input id="bulkGroupInput" type="text" placeholder="skupina pre označené">
+                <button type="button" id="bulkAddGroupButton" title="Pridá skupinu všetkým označeným materiálom">Skupina +</button>
+              </div>
+              <button class="danger-link" type="button" id="bulkDeleteButton" title="Vymaže označené materiály po potvrdení">Vymazať</button>
+            </div>
+
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="checkbox-col"><input id="selectVisibleCheckbox" type="checkbox" aria-label="Označiť zobrazené"></th>
+                  <th data-sort="nazov">Názov</th>
+                  <th data-sort="interny_kod">Interný kód</th>
+                  <th data-sort="poradove_cislo">ID</th>
+                  <th data-sort="skratka">Skratka</th>
+                  <th data-sort="EAN_QR">EAN/QR</th>
+                  <th data-sort="merna_jednotka">MJ</th>
+                  <th>Stav</th>
+                  <th class="print-col">Tlač</th>
+                </tr>
+              </thead>
+              <tbody id="materialsBody">
+                <tr><td colspan="9" class="empty-cell">Načítavam databázu...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="loading-line" id="loadingLine" hidden>
+            <span></span>
+            Načítavam ďalšie riadky...
+          </div>
+        </div>
+
+        <div class="labels-view" id="labelsView" hidden>
+          <div class="todo-card">
+            <p class="eyebrow">HTML tlač</p>
+            <h2>Generátor štítkov</h2>
+            <p>HTML tlač ostáva čiernobiela pre mono štítkovačku. PDF export generuje farebné štítky 62 x 45 mm, jeden materiál na jednu PDF stránku.</p>
+            <button class="accent-button" id="labelsPrintSelectedButton" type="button">Tlačiť označené štítky</button>
+            <button class="ghost-button" id="labelsPdfSelectedButton" type="button">Stiahnuť PDF označených</button>
+            <ul>
+              <li>tlač z riadku tabuľky aj hromadná HTML tlač sú čiernobiele pre mono štítkovačku,</li>
+              <li>farebný PDF export používa raster 300 DPI a pôvodné QR matice z databázy,</li>
+              <li>jeden materiál znamená jedna PDF stránka.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <aside class="editor-panel" aria-label="Editor materiálu">
+        <div class="editor-head">
+          <div>
+            <p class="eyebrow">Editor</p>
+            <h2 id="editorTitle">Vyber materiál</h2>
+          </div>
+          <div class="editor-actions">
+            <button class="accent-button small" id="saveEditorButton" type="submit" form="materialForm">Uložiť</button>
+            <button class="ghost-button small" id="undoButton" type="button" disabled>Undo</button>
+          </div>
+        </div>
+
+        <form id="materialForm">
+          <label>Názov
+            <textarea id="fieldNazov" rows="3" required></textarea>
+          </label>
+          <div class="form-grid">
+            <label>Interný kód
+              <input id="fieldKod" type="text" required>
+            </label>
+            <label>ID
+              <input id="fieldId" type="text">
+            </label>
+          </div>
+          <div class="form-grid">
+            <label>Skratka
+              <input id="fieldSkratka" type="text" placeholder="napr. FG436">
+            </label>
+            <label>Merná jednotka
+              <input id="fieldMj" type="text" required>
+            </label>
+          </div>
+          <label>EAN/QR text
+            <input id="fieldEan" type="text" required>
+          </label>
+
+          <fieldset>
+            <legend>Vlastnosti</legend>
+            <label><input id="propFavorite" type="checkbox"> Obľúbený materiál</label>
+            <label><input id="propUnavailable" type="checkbox"> Nedostupný</label>
+            <label><input id="propDiscontinued" type="checkbox"> Vyradený</label>
+            <label><input id="propArchived" type="checkbox"> Archivovaný</label>
+            <label><input id="propHidden" type="checkbox"> Skrytý zo zobrazenia</label>
+          </fieldset>
+
+          <label>Skupiny
+            <input id="fieldGroups" type="text" placeholder="nalepky, folie, blindramy">
+          </label>
+          <label>Tagy
+            <input id="fieldTags" type="text" placeholder="ploter, kapa, často">
+          </label>
+          <label>Poznámka
+            <textarea id="fieldNote" rows="3" placeholder="Interná poznámka k materiálu"></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button class="accent-button" type="submit">Uložiť</button>
+            <button class="ghost-button" id="archiveButton" type="button">Archivovať</button>
+            <button class="danger-button" id="deleteButton" type="button">Vymazať</button>
+          </div>
+        </form>
+
+        <section class="multi-editor" id="multiEditPanel" hidden>
+          <p id="multiEditSummary">Označené materiály sú pripravené na hromadnú úpravu.</p>
+          <div class="multi-actions">
+            <button type="button" data-bulk-action="oblubeny" data-bulk-value="true">Obľúbiť</button>
+            <button type="button" data-bulk-action="oblubeny" data-bulk-value="false">Neobľúbiť</button>
+            <button type="button" data-bulk-action="nedostupny" data-bulk-value="true">Nedostupné</button>
+            <button type="button" data-bulk-action="nedostupny" data-bulk-value="false">Dostupné</button>
+            <button type="button" data-bulk-action="vyradeny" data-bulk-value="true">Vyradiť</button>
+            <button type="button" data-bulk-action="vyradeny" data-bulk-value="false">Nevyradené</button>
+            <button type="button" data-bulk-action="archivovany" data-bulk-value="true">Archivovať</button>
+            <button type="button" data-bulk-action="archivovany" data-bulk-value="false">Z archívu</button>
+            <button type="button" data-bulk-action="skryty" data-bulk-value="true">Skryť</button>
+            <button type="button" data-bulk-action="skryty" data-bulk-value="false">Zobraziť</button>
+          </div>
+          <label class="compact-label">Skupina
+            <input id="multiGroupInput" type="text" placeholder="napr. folie">
+          </label>
+          <div class="form-actions">
+            <button class="ghost-button" id="multiAddGroupButton" type="button">Skupina +</button>
+            <button class="ghost-button" id="multiRemoveGroupButton" type="button">Skupina -</button>
+            <button class="ghost-button" id="multiPrintButton" type="button">Tlač štítkov</button>
+            <button class="ghost-button" id="multiPdfButton" type="button">PDF štítky</button>
+            <button class="danger-button" id="multiDeleteButton" type="button">Vymazať</button>
+          </div>
+        </section>
+
+        <section class="integration-note">
+          <h3>FaxCopy zvýraznenie</h3>
+          <p>Userscript môže čítať obľúbené materiály z endpointu <code>/api/favorites</code> a zvýrazniť ich v tabuľke príslušenstva.</p>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="confirmDialog">
+    <form method="dialog" class="dialog-card">
+      <h2 id="confirmTitle">Potvrdenie</h2>
+      <p id="confirmText"></p>
+      <label id="confirmLabel">Potvrdenie
+        <input id="confirmInput" type="text">
+      </label>
+      <div class="dialog-actions">
+        <button type="button" class="ghost-button" id="cancelConfirm">Zrušiť</button>
+        <button type="button" class="danger-button" id="acceptConfirm">Potvrdiť</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
